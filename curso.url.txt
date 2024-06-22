@@ -1,0 +1,75 @@
+https://www.youtube.com/watch?v=KBvBY5qyfEM
+
+https://jwt.io/ 	( xa ver mi token ) 
+
+https://generate.plus/en/base64  
+	( o googlear secret key generator base64 compatible xa generar una secret key base 64 compat xa yo usar em mi sistema de seguridad)
+	
+Pruebas: ver el final del video tutorial o reusar mi collection en PostMan que guardé xa las pruebas de mis controllers de este proyecto jwt
+
+	aunq basicamente el orden de pruebas mas logico sería siguiente:
+	
+		1) pruebo el enndpoint saludarPublico
+		2) pruebo el enndpoint saludarProtegido ( falla xq no le estoy pasando un token porque aun no lo tengo )
+		3) pruebo cualquier url invalida xa q tmb rebote ( solo puedo acceder sin token a las publicas y las q no existen tmb dan 403 ) eso funca
+		4) pruebo ahora el endPoint de registrar ( funca! -> me genera y devuelve un token! ) : 
+										-> abro postman, cargo los datos esperados xa rellenar la entidad idem a un formulario pero en post raw json 
+											-> y como registrar es publico toma toda esa data y como decia FUNCA! me devuelve un token
+										
+										( lo ideal sería mandar mail xa q lo confirmen desde el mail )
+
+		Saber -> tmb puruebo ir a mi DB ( al workbench UI y ver mi DB jwt y ver q ahi ya estan los usuarios registrados! 
+			, tmb ver como las claves fueron encriptadas gracias a nuestro Bcrypt ,
+			, tmb ver que los roles estan con valor 0 PORQ SON DE MI ENUM .user Q EMPIEZA en 0 xq especifiqué q el enum sea del tipo .ORDINARY
+			y tmb hay tablas autogeneradas por el fmk de spring security  
+
+ 
+		5) Pruebo el endpoint saludarProtegido idem (2) pero ahora en postman en el req ese le agrego en la solapa Authorization mi token:
+		-> abro postman , 
+				-> elijo Bear Token y pego mi token ( el que me dió el /register endpoint ) !!
+				
+				NO FUNCA ! PERO ES XQ MI APP NO CONTEMPLABA Q EN CADA REQ SE CREA EN DB EN LA TABLA USERS UNA ENTRADA CON MISMO EMAIL OSEA REPE!
+				 Solucion :
+				 
+					 Asegúrate de que la consulta devuelva solo un resultado:
+
+						Verifica que el campo email sea único en tu base de datos. Si no lo es, puedes agregar una restricción de unicidad en 
+							la tabla de la base de datos. ( así q voy a dropear la tabla users con toda su basura, registrarme de nuevo pero ya 
+															tmb de paso le pongo el control de unique al email en el entity user )
+			
+						ya le puse el constraint de @column con param unique al campo email de la entity User , dropié a mano la tabla users,
+						re-startié el sistema y se generó la tabla Users de nuevo desde cero con todo en null pero el constraint de email unqiue
+							-> ent: pruebo a ver que pasa..
+									-> a) ejecuto el saludarPublico y funciona y no me crea nada en DB ni en la tabla Users (xq es public) (BIEN)
+									-> b) ejecuto el saludarProtegido (aun sin ejec el registrarme ) y 403 (bien) ( no auth ent 403 )  
+									-> c) ejecuto el registrarme c/mis datos de registro q se esperan ( y funca, me devuelve un token de acceso)
+											-> PERO ADEMAS ME CREA LA ENTRADA EN USUARIOS !!!(BIEN)!!! 
+											(aunq en la realidad no guardan en db hasta una confirmacion x email pero aca es sin eso y todo joya hasta aca)
+									-> b) ejecuto el saludarProtegido (pero ahora pasandole el token q me di registracion del paso (c) )
+										-> no andaba xq tenia un pequeño error en el code pero btn der -> debug as springboot app y lo pude 
+											dilucidar todo y corregir el errorcito, la cuestion que lo pruebo pasanddo toke y ahora FUNCA!!!! 		   
+						( FUNCA el access al private endpoint pero usando mi token de acceso!!! ) 
+	 
+		6) pruebo ahora el endpoint de autenticar (login) 	
+		-> abro postman , 
+						-> http://localhost:8085/api/auth/authenticate 
+						
+						( metodo post , war, json: {"email":"charly@esteban.gil","password": "123456"} 
+	 
+	 		Y FUNCA! , Rta:
+	 		
+ 			   "token": "eyJhbGciOiJIUzI1NiJ9
+ 			   			.eyJzdWIiOiJjaGFybHlAZXN0ZWJhbi5naWwiLCJpYXQiOjE3MTkwODIxMTEsImV4cCI6MTcxOTE2ODUxMX0
+ 			   			.e9kiDz5iLxOyw0nPcvdFBFe341q__JFMcH6sGIg34Vg"
+	
+			FIIIIIIIIIIIN !!!!!!!!!!!!!!!!!!! --- ANDA TOOOOODOOOO !!!!!!!!!!!!!! 
+			
+			( el debug me fué muy importante xa entender y xa encontrar errores) 
+			
+			!!! SABER -> SUBO este proyecto a mi Github xa backupearlo y tenerlo siempre a mano ( pero privado )
+			
+							-> GUIA: problemas resueltos crear sp app desde 0 en eclipse.html  ( mi chat con chatgpt sobre esto ) 
+							
+								( y tmb ese chat tiene TODOOOO lo que debo saber para ingresar al ambiente laboral, seguridad, 
+									teorias, explicaciones, otros modulos como spring batch , hateoas, websocket , hibernate vs jpa, redis etc!!) 
+			!!! ----------------------------------						
