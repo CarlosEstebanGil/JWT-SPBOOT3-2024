@@ -1,0 +1,15 @@
+0) me aseguro en el market place que EGit esté instalado.
+
+1) btn der en el proy -> team -> share project ( marco parent folder xa q use el mismo dir del proy como repo .git y listo + facil ) 
+2) btn der en el proy -> team -> commit -> "+" add all ( para pasar todo lo pend al staging are y luego comitear all el stagin area ) 
+3) abro un cmd -> voy al dir del proy ( y ver que existe el dir <.git> ( joya ) , luego:
+	a) voy a mi url de GitHub en el navegador, me logueo y creo un repo publico para mi Proyecto
+		-> eso me dice auto al crearlo los commandos para mi cmd xa agregar el repo con add remote y 
+				pushear a un repo ya existente (elq acabo e crear) ( la ultima opcion de los ejemplos que me da )
+	b) basicamente en mi cmd ent copio esa ulti opcion xa add remote y push, ej:
+
+		git init   ( x las dudas )
+		git status ( x las dudas )  + [git add . yl git commit -m "grabo si algo faltaba" ] ( ni deberia x lo q ya hice en eclipse )
+		git remote add origin https://github.com/CarlosEstebanGil/JWT-SPBOOT3-2024.git
+		git branch -M main
+		git push -u origin main  ( no se porque con master no me funcaba .. luego lo veo .. tngo el bocho qmado )
